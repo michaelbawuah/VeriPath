@@ -1,0 +1,29 @@
+name: VeriPath checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec tsc --noEmit
+      - run: node scripts/verify-veripath.mjs
+      - run: g++ -std=c++23 -O2 -Wall -Wextra -Werror engine/tests/road_matcher_test.cpp -o /tmp/road-match-tests
+      - run: /tmp/road-match-tests
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r ml/requirements.txt
+      - run: python -m unittest discover -s ml -p 'test_*.py'
+      - run: pnpm build

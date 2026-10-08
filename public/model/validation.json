@@ -1,0 +1,634 @@
+{
+  "target": "Distinct police-reported crashes with chosen-mode injury/death assigned to unambiguous ground-level road segments; annual count",
+  "scope": "NYC LION roadbed segments",
+  "forecast_year": 2026,
+  "split": {
+    "history": 2021,
+    "training": [
+      2022,
+      2023
+    ],
+    "tuning": 2024,
+    "test": 2025
+  },
+  "road_segments": 144543,
+  "zero_segments_included": true,
+  "matching": {
+    "maximum_distance_m": 35,
+    "strong_distance_m": 20,
+    "named_margin_m": 6,
+    "unnamed_margin_m": 12,
+    "assignment_counts": {
+      "ambiguous": 139833,
+      "strong": 40423,
+      "unmatched": 555
+    },
+    "ground_level_only": true
+  },
+  "yearly_audit": {
+    "2021": {
+      "records": 38809,
+      "usable_coordinates": 35318,
+      "strong_assignments": 7813,
+      "eligible_strong_assignments": 7813,
+      "excluded_missing_or_outside": 3491
+    },
+    "2022": {
+      "records": 39336,
+      "usable_coordinates": 35145,
+      "strong_assignments": 8237,
+      "eligible_strong_assignments": 8237,
+      "excluded_missing_or_outside": 4191
+    },
+    "2023": {
+      "records": 40472,
+      "usable_coordinates": 37258,
+      "strong_assignments": 8634,
+      "eligible_strong_assignments": 8634,
+      "excluded_missing_or_outside": 3214
+    },
+    "2024": {
+      "records": 40229,
+      "usable_coordinates": 36743,
+      "strong_assignments": 8770,
+      "eligible_strong_assignments": 8770,
+      "excluded_missing_or_outside": 3486
+    },
+    "2025": {
+      "records": 37420,
+      "usable_coordinates": 36347,
+      "strong_assignments": 6969,
+      "eligible_strong_assignments": 6969,
+      "excluded_missing_or_outside": 1073
+    }
+  },
+  "code_hashes": {
+    "trainer": "ddef94dd49752ad181579ed78251280ebfaf24119ffc7c6259030c7b7d656b3f",
+    "matcher": "582b43ec036d4efcaf1ce6620af609bd8f0fcce1d40f596c12fc88a7d38fc250"
+  },
+  "quarantined_road_ids": [
+    "0016558",
+    "0071288",
+    "0074070",
+    "0101502",
+    "0119190",
+    "0133963",
+    "0142624",
+    "0173453",
+    "0173454",
+    "0173459",
+    "0177442",
+    "0177443",
+    "0182118",
+    "0186414",
+    "0343093",
+    "0343094",
+    "0343095",
+    "0343096"
+  ],
+  "data_hashes": {
+    "roads.json": "9c2a4b3e547fc2a10bdfbd651637109b49657fd7f1de3bf5ba29731f2b7be0fe",
+    "crashes.json": "494b0040ec5e413ae0568a44a64b6cb20245d4a89b768f84c890c9ad59b4fd55"
+  },
+  "limitations": [
+    "Frequency of strongly assigned police reports, not per-trip risk; no traffic-exposure denominator.",
+    "Ambiguous intersections, elevated roads, tunnels and unmatched records are excluded.",
+    "Current LION geometry is used retrospectively; road redesign changes and under-reporting are not modelled.",
+    "Forecast year 2026; no observed 2026 target data used."
+  ],
+  "modes": {
+    "bicycle": {
+      "enabled": false,
+      "alpha_selected_on_2024": 0.05,
+      "tuning": {
+        "poisson_deviance": 0.0690119671048064,
+        "mae": 0.014361567785852616,
+        "observed": 1100,
+        "predicted": 1014.0330623571483,
+        "observed_predicted_ratio": 1.084777253162751
+      },
+      "test": {
+        "poisson_deviance": 0.06303214906832592,
+        "mae": 0.013572210781666701,
+        "observed": 976,
+        "predicted": 1017.5846545348063,
+        "observed_predicted_ratio": 0.9591339606493802
+      },
+      "strongest_baseline_selected_on_2024": "smoothed_history",
+      "baseline_test": {
+        "poisson_deviance": 0.06187538223631375,
+        "mae": 0.01311083186027678,
+        "observed": 976,
+        "predicted": 1047.5,
+        "observed_predicted_ratio": 0.9317422434367542
+      },
+      "all_baselines_test": {
+        "city_mean": {
+          "poisson_deviance": 0.06916248311140835,
+          "mae": 0.013837507822211966,
+          "observed": 976,
+          "predicted": 1037.0,
+          "observed_predicted_ratio": 0.9411764705882353
+        },
+        "length_only": {
+          "poisson_deviance": 0.06358653442775314,
+          "mae": 0.013769566432837867,
+          "observed": 976,
+          "predicted": 1037.0,
+          "observed_predicted_ratio": 0.9411764705882353
+        },
+        "previous_year": {
+          "poisson_deviance": 0.1631884450741657,
+          "mae": 0.012772268065558343,
+          "observed": 976,
+          "predicted": 1100.1435289999997,
+          "observed_predicted_ratio": 0.8871569702247463
+        },
+        "history_mean": {
+          "poisson_deviance": 0.1374902629447067,
+          "mae": 0.012454014514711884,
+          "observed": 976,
+          "predicted": 1058.1419559999997,
+          "observed_predicted_ratio": 0.9223715159065107
+        },
+        "smoothed_history": {
+          "poisson_deviance": 0.06187538223631375,
+          "mae": 0.01311083186027678,
+          "observed": 976,
+          "predicted": 1047.5,
+          "observed_predicted_ratio": 0.9317422434367542
+        }
+      },
+      "deviance_improvement_fraction": -0.018695106037394105,
+      "calibration_deciles": [
+        {
+          "n": 14455,
+          "observed": 7,
+          "predicted": 79.25166961985568
+        },
+        {
+          "n": 14455,
+          "observed": 9,
+          "predicted": 85.41049501663746
+        },
+        {
+          "n": 14455,
+          "observed": 21,
+          "predicted": 90.62197804558735
+        },
+        {
+          "n": 14454,
+          "observed": 18,
+          "predicted": 93.54780949765397
+        },
+        {
+          "n": 14454,
+          "observed": 47,
+          "predicted": 96.65594623338218
+        },
+        {
+          "n": 14454,
+          "observed": 80,
+          "predicted": 98.58396526043703
+        },
+        {
+          "n": 14454,
+          "observed": 86,
+          "predicted": 99.19055090664946
+        },
+        {
+          "n": 14454,
+          "observed": 100,
+          "predicted": 101.36478904527324
+        },
+        {
+          "n": 14454,
+          "observed": 152,
+          "predicted": 105.05407035253191
+        },
+        {
+          "n": 14454,
+          "observed": 456,
+          "predicted": 167.90338055679806
+        }
+      ],
+      "spatial_block_test": {
+        "block_meters": 2000,
+        "held_out_segments": 35103,
+        "alpha_selected_on_nonheldout_2024": 0.05,
+        "local_past_history_available": true,
+        "description": "Coefficient transfer to held-out blocks with local prior-year counts; not cold-start validation",
+        "metrics": {
+          "poisson_deviance": 0.06224275338794211,
+          "mae": 0.013496183170944065,
+          "observed": 235,
+          "predicted": 248.09235786539415,
+          "observed_predicted_ratio": 0.9472278873156682
+        }
+      },
+      "deployed_coefficients": {
+        "intercept": -5.415967762233311,
+        "coefficients": [
+          0.09518500942270118,
+          1.2824152509322815,
+          2.7760986409989656
+        ],
+        "features": [
+          "log_length_m",
+          "log_previous_year_count",
+          "log_prior_history_mean"
+        ]
+      },
+      "improvement_95pct_geographic_block_interval": [
+        -0.04731893323125258,
+        0.008610441490449405
+      ],
+      "calibration_gate_passed": false
+    },
+    "pedestrian": {
+      "enabled": false,
+      "alpha_selected_on_2024": 0.05,
+      "tuning": {
+        "poisson_deviance": 0.11101155662539788,
+        "mae": 0.026424339523204457,
+        "observed": 2018,
+        "predicted": 1906.5878302035526,
+        "observed_predicted_ratio": 1.058435372360765
+      },
+      "test": {
+        "poisson_deviance": 0.09216036897120837,
+        "mae": 0.02357212363703506,
+        "observed": 1580,
+        "predicted": 1915.7495264630306,
+        "observed_predicted_ratio": 0.8247424719018925
+      },
+      "strongest_baseline_selected_on_2024": "smoothed_history",
+      "baseline_test": {
+        "poisson_deviance": 0.09236127620435741,
+        "mae": 0.022759779738478092,
+        "observed": 1580,
+        "predicted": 1952.5833333333333,
+        "observed_predicted_ratio": 0.8091844138107636
+      },
+      "all_baselines_test": {
+        "city_mean": {
+          "poisson_deviance": 0.10183504500718608,
+          "mae": 0.024079201433954905,
+          "observed": 1580,
+          "predicted": 1939.5,
+          "observed_predicted_ratio": 0.8146429492137148
+        },
+        "length_only": {
+          "poisson_deviance": 0.09251479555460257,
+          "mae": 0.023859715102395897,
+          "observed": 1580,
+          "predicted": 1939.5,
+          "observed_predicted_ratio": 0.8146429492137148
+        },
+        "previous_year": {
+          "poisson_deviance": 0.2619476165449324,
+          "mae": 0.021862976436077843,
+          "observed": 1580,
+          "predicted": 2018.1426949999995,
+          "observed_predicted_ratio": 0.7828980596438947
+        },
+        "history_mean": {
+          "poisson_deviance": 0.2197671822039649,
+          "mae": 0.021560858051467954,
+          "observed": 1580,
+          "predicted": 1965.8064866666664,
+          "observed_predicted_ratio": 0.803741370636709
+        },
+        "smoothed_history": {
+          "poisson_deviance": 0.09236127620435741,
+          "mae": 0.022759779738478092,
+          "observed": 1580,
+          "predicted": 1952.5833333333333,
+          "observed_predicted_ratio": 0.8091844138107636
+        }
+      },
+      "deviance_improvement_fraction": 0.002175232320355991,
+      "calibration_deciles": [
+        {
+          "n": 14455,
+          "observed": 7,
+          "predicted": 127.89216383975777
+        },
+        {
+          "n": 14455,
+          "observed": 25,
+          "predicted": 144.96159313538817
+        },
+        {
+          "n": 14455,
+          "observed": 28,
+          "predicted": 160.03593665707632
+        },
+        {
+          "n": 14454,
+          "observed": 39,
+          "predicted": 168.7990451722187
+        },
+        {
+          "n": 14454,
+          "observed": 69,
+          "predicted": 178.36334877091505
+        },
+        {
+          "n": 14454,
+          "observed": 89,
+          "predicted": 184.23255601434522
+        },
+        {
+          "n": 14454,
+          "observed": 121,
+          "predicted": 186.22817973984598
+        },
+        {
+          "n": 14454,
+          "observed": 167,
+          "predicted": 193.61869799383766
+        },
+        {
+          "n": 14454,
+          "observed": 266,
+          "predicted": 206.13609036558915
+        },
+        {
+          "n": 14454,
+          "observed": 769,
+          "predicted": 365.4819147740566
+        }
+      ],
+      "spatial_block_test": {
+        "block_meters": 2000,
+        "held_out_segments": 35103,
+        "alpha_selected_on_nonheldout_2024": 0.05,
+        "local_past_history_available": true,
+        "description": "Coefficient transfer to held-out blocks with local prior-year counts; not cold-start validation",
+        "metrics": {
+          "poisson_deviance": 0.09722002690625324,
+          "mae": 0.024429160544540543,
+          "observed": 410,
+          "predicted": 467.3407160825641,
+          "observed_predicted_ratio": 0.877304257666191
+        }
+      },
+      "deployed_coefficients": {
+        "intercept": -5.091253644029572,
+        "coefficients": [
+          0.15490083314625264,
+          1.088060564108313,
+          2.408589782400361
+        ],
+        "features": [
+          "log_length_m",
+          "log_previous_year_count",
+          "log_prior_history_mean"
+        ]
+      },
+      "improvement_95pct_geographic_block_interval": [
+        -0.015444546266469777,
+        0.01893401105059734
+      ],
+      "calibration_gate_passed": false
+    },
+    "auto": {
+      "enabled": false,
+      "alpha_selected_on_2024": 0.05,
+      "tuning": {
+        "poisson_deviance": 0.19797606317433236,
+        "mae": 0.06057510591410106,
+        "observed": 5378,
+        "predicted": 4867.3242611919795,
+        "observed_predicted_ratio": 1.1049191940795329
+      },
+      "test": {
+        "poisson_deviance": 0.1699990256543263,
+        "mae": 0.05453846070081145,
+        "observed": 4252,
+        "predicted": 4871.618391866907,
+        "observed_predicted_ratio": 0.8728105647804125
+      },
+      "strongest_baseline_selected_on_2024": "smoothed_history",
+      "baseline_test": {
+        "poisson_deviance": 0.16346483065826714,
+        "mae": 0.052923370753048427,
+        "observed": 4252,
+        "predicted": 5112.583333333334,
+        "observed_predicted_ratio": 0.8316734853547618
+      },
+      "all_baselines_test": {
+        "city_mean": {
+          "poisson_deviance": 0.23641743619950514,
+          "mae": 0.06288736446848163,
+          "observed": 4252,
+          "predicted": 5059.5,
+          "observed_predicted_ratio": 0.8403992489376421
+        },
+        "length_only": {
+          "poisson_deviance": 0.21512905942032615,
+          "mae": 0.061721366037643506,
+          "observed": 4252,
+          "predicted": 5059.5,
+          "observed_predicted_ratio": 0.8403992489376421
+        },
+        "previous_year": {
+          "poisson_deviance": 0.5154217894974743,
+          "mae": 0.04842943614011055,
+          "observed": 4252,
+          "predicted": 5378.140566,
+          "observed_predicted_ratio": 0.7906078221310663
+        },
+        "history_mean": {
+          "poisson_deviance": 0.40190343810230444,
+          "mae": 0.04611637301471996,
+          "observed": 4252,
+          "predicted": 5165.802392666666,
+          "observed_predicted_ratio": 0.8231054300559595
+        },
+        "smoothed_history": {
+          "poisson_deviance": 0.16346483065826714,
+          "mae": 0.052923370753048427,
+          "observed": 4252,
+          "predicted": 5112.583333333334,
+          "observed_predicted_ratio": 0.8316734853547618
+        }
+      },
+      "deviance_improvement_fraction": -0.03997309372142133,
+      "calibration_deciles": [
+        {
+          "n": 14455,
+          "observed": 24,
+          "predicted": 214.86076709199455
+        },
+        {
+          "n": 14455,
+          "observed": 36,
+          "predicted": 262.77929998370166
+        },
+        {
+          "n": 14455,
+          "observed": 57,
+          "predicted": 307.99626439026383
+        },
+        {
+          "n": 14454,
+          "observed": 97,
+          "predicted": 335.69675481766296
+        },
+        {
+          "n": 14454,
+          "observed": 137,
+          "predicted": 367.24147815740196
+        },
+        {
+          "n": 14454,
+          "observed": 154,
+          "predicted": 385.9829474112135
+        },
+        {
+          "n": 14454,
+          "observed": 256,
+          "predicted": 393.7171295651525
+        },
+        {
+          "n": 14454,
+          "observed": 363,
+          "predicted": 423.14577813480525
+        },
+        {
+          "n": 14454,
+          "observed": 491,
+          "predicted": 472.14978363691705
+        },
+        {
+          "n": 14454,
+          "observed": 2637,
+          "predicted": 1708.0481886777936
+        }
+      ],
+      "spatial_block_test": {
+        "block_meters": 2000,
+        "held_out_segments": 35103,
+        "alpha_selected_on_nonheldout_2024": 0.05,
+        "local_past_history_available": true,
+        "description": "Coefficient transfer to held-out blocks with local prior-year counts; not cold-start validation",
+        "metrics": {
+          "poisson_deviance": 0.16821686166038868,
+          "mae": 0.05557374735016711,
+          "observed": 1070,
+          "predicted": 1251.5499332180736,
+          "observed_predicted_ratio": 0.8549399201746113
+        }
+      },
+      "deployed_coefficients": {
+        "intercept": -4.726145998630621,
+        "coefficients": [
+          0.24852471406306764,
+          0.6840264239823769,
+          1.9071749676541088
+        ],
+        "features": [
+          "log_length_m",
+          "log_previous_year_count",
+          "log_prior_history_mean"
+        ]
+      },
+      "improvement_95pct_geographic_block_interval": [
+        -0.05837904585776192,
+        -0.0228032105869672
+      ],
+      "calibration_gate_passed": false
+    }
+  },
+  "retrieved_manifest": {
+    "startedAt": "2026-10-07T21:48:21.666766+00:00",
+    "completedAt": "2026-10-07T21:51:00.268610+00:00",
+    "sources": {
+      "roads": {
+        "publisher": "NYC Department of City Planning",
+        "endpoint": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/LION/FeatureServer/0/query",
+        "where": "FeatureTyp IN ('0','6','A','C','W') AND RB_Layer IN ('B','R')",
+        "fields": "SegmentID,PhysicalID,Street,FeatureTyp,NodeIDFrom,NodeIDTo,NodeLevelF,NodeLevelT,RB_Layer,TrafDir,NonPed,StreetWidth_Min,StreetWidth_Max,BikeLane,Number_Travel_Lanes,POSTED_SPEED,Shape__Length",
+        "outSR": 4326,
+        "geometryPrecision": 6,
+        "maxAllowableOffset": 1e-05,
+        "pagination": "Stable sorted OBJECTID inventory; batches of 2000 selected records bounded by OBJECTID",
+        "officialDataset": "https://data.cityofnewyork.us/City-Government/LION/2v4z-66xt"
+      },
+      "crashes": {
+        "publisher": "NYPD / NYC Open Data",
+        "endpoint": "https://data.cityofnewyork.us/resource/h9gi-nx95.json",
+        "where": "crash_date >= '2021-01-01T00:00:00.000' AND crash_date < '2026-01-01T00:00:00.000' AND (number_of_persons_injured > 0 OR number_of_persons_killed > 0)",
+        "fields": "collision_id,crash_date,crash_time,latitude,longitude,on_street_name,off_street_name,cross_street_name,borough,number_of_persons_injured,number_of_persons_killed,number_of_pedestrians_injured,number_of_pedestrians_killed,number_of_cyclist_injured,number_of_cyclist_killed,number_of_motorist_injured,number_of_motorist_killed",
+        "pagination": "Per calendar year, ORDER BY collision_id ASC LIMIT 25000 OFFSET n",
+        "officialDataset": "https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95"
+      }
+    },
+    "counts": {
+      "roadSourceRecords": 182754,
+      "uniqueRoadSegments": 158893,
+      "duplicateRoadRecords": 23861,
+      "geometryConflictSegments": 18,
+      "crashSourceRecords": 196266,
+      "uniqueCrashes": 196266,
+      "crashCountsByYear": {
+        "2021": 38809,
+        "2022": 39336,
+        "2023": 40472,
+        "2024": 40229,
+        "2025": 37420
+      },
+      "crashesMissingCoordinates": 13492,
+      "crashesOutsideBroadNYCBounds": 1963
+    },
+    "geometryConflictSegmentIds": [
+      "0016558",
+      "0071288",
+      "0074070",
+      "0101502",
+      "0119190",
+      "0133963",
+      "0142624",
+      "0173453",
+      "0173454",
+      "0173459",
+      "0177442",
+      "0177443",
+      "0182118",
+      "0186414",
+      "0343093",
+      "0343094",
+      "0343095",
+      "0343096"
+    ],
+    "assets": {
+      "roads": {
+        "path": "/workspace/scratch/25ea05936125/veripath-data/roads.json",
+        "bytes": 79961840,
+        "sha256": "9c2a4b3e547fc2a10bdfbd651637109b49657fd7f1de3bf5ba29731f2b7be0fe"
+      },
+      "crashes": {
+        "path": "/workspace/scratch/25ea05936125/veripath-data/crashes.json",
+        "bytes": 87150847,
+        "sha256": "494b0040ec5e413ae0568a44a64b6cb20245d4a89b768f84c890c9ad59b4fd55"
+      }
+    },
+    "requests": {
+      "requests": 104,
+      "bytes": 179539500,
+      "retried_requests": 0
+    },
+    "caveats": [
+      "Road matching remains an inferred geographic association; coordinates can be erroneous, intersections ambiguous, and stacked roads geometrically coincident.",
+      "Shape__Length is source-planar feet, not meters; divide/convert correctly and avoid treating source length as live route distance.",
+      "LION snapshot uses current road features; using those features for older crash prediction requires accounting for temporal leakage and changed infrastructure.",
+      "Deduplicated roads preserve the first record in ascending OBJECTID order plus aliases; geometry conflicts are explicitly recorded.",
+      "Geometry generalization maxAllowableOffset 0.00001 degrees is approximately one meter and is not a surveyed-accuracy guarantee.",
+      "NYC police-reported crash records are preliminary/amendable and exclude unreported crashes; missing/invalid locations are retained for audit.",
+      "Neither snapshot measures exposure; traffic samples cover too few segments for citywide calibrated per-trip risk claims.",
+      "Public datasets are not transactionally locked during download. Record inventories, page counts, unique IDs and file hashes were checked."
+    ]
+  }
+}
