@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "status": "Protocol draft; forecasts disabled; immutable training and prediction manifests required before final outcomes are accessed",
+  "createdAt": "2026-10-08",
+  "scope": "NYC annual police-reported injury/fatal crash frequency on eligible whole ground-level LION segments; not individual trip risk",
+  "priorAudit": {
+    "year": 2025,
+    "previouslyExamined": true,
+    "sourceCommit": "fac4ab0ae1e4f3c33afa11e890e03ee1ff9b874f"
+  },
+  "nextUnseenTemporalTest": {
+    "year": 2026,
+    "earliestRetrieval": "2027-04-01",
+    "whollyProspective": false,
+    "maturityRule": "Fetch a full deduplicated annual snapshot after this date, then a second snapshot at least 30 days later. If unique source-report counts or eligible target totals differ by more than 1%, wait and repeat maturity checks without model tuning. Archive all snapshots and revisions."
+  },
+  "prospectiveAnnualTest": {
+    "year": 2027,
+    "freezeBefore": "2027-01-01",
+    "earliestRetrieval": "2028-04-01",
+    "maturityRule": "Use the same two-snapshot rule; forecasts and pipeline must be committed before the year begins."
+  },
+  "outcomeAccess": "Do not fetch final-year labels until the immutable training, matching, road-snapshot, baseline, model and prediction manifests are committed. Freeze any protocol amendment before access and record its reason.",
+  "matching": "Legacy strongly assigned street-segment target: ground MM, candidate radius 35 m, distance at most 20 m, named margin at least 6 m or unnamed margin at least 12 m; competing non-ground/quarantined geometry within best distance + 6 m blocks acceptance. Keep node-context outcomes separate. A new assignment target requires a separately frozen experiment.",
+  "development": "Earlier rolling temporal splits only; choose regularization and the strongest baseline using development years. Group matching review partitions by node or fixed 2 km spatial block before any tuning; no neighboring node may appear in both partitions.",
+  "candidates": [
+    "Regularized Poisson count model with segment length, previous-year count and prior-three-year average",
+    "Baseline: previous-year count",
+    "Baseline: prior-three-year average",
+    "Baseline: citywide training mean",
+    "Baseline: segment length \u00d7 training citywide rate",
+    "Baseline: smoothed history, (prior-history mean + citywide training mean) / 2"
+  ],
+  "primaryMetric": "Mean Poisson deviance against the baseline selected before final-year outcomes are accessed",
+  "uncertainty": "Paired 2 km geographic-block bootstrap with 1000 replicates; publish block counts and intervals as descriptive uncertainty. Spatial and temporal dependence remain limitations.",
+  "releaseGates": {
+    "positiveDevianceGain": true,
+    "positiveBootstrapLowerBound": true,
+    "aggregateObservedPredictedRatio": [
+      0.8,
+      1.2
+    ],
+    "decileObservedPredictedRatio": [
+      0.5,
+      2.0
+    ],
+    "minimumObservedPerDecileForGate": 30,
+    "minimumRouteAndForecastCoverage": 0.9,
+    "perMode": true,
+    "sparseCalibrationRule": "Sort segments by frozen prediction, form ten equal-count bins, then pool adjacent bins from low to high until each pooled group has at least 30 observed target reports; merge any remaining tail into the previous group. Publish original and pooled bins. Require at least three evaluable pooled groups; otherwise calibration is insufficient and release remains withheld. Every pooled group must meet the stated ratio bound."
+  },
+  "requiredManifests": [
+    "Data retrieval windows and snapshot hashes",
+    "Road graph and quarantine hashes",
+    "Matching source and binary hashes",
+    "Training-year and spatial-partition definitions",
+    "Selected model/baseline and hyperparameters",
+    "Frozen final-year predictions",
+    "Target snapshots and maturity comparisons",
+    "Protocol version and amendments"
+  ],
+  "failurePolicy": "Publish failed gates and keep forecasts disabled. Do not tune to the opened final year and retest it as if unseen. Select a later temporal test for subsequent development.",
+  "limitations": [
+    "Current road geometry applied retrospectively",
+    "Incomplete reporting and coordinate errors",
+    "Counts are not adjusted for traffic exposure",
+    "Poisson model and geographic bootstrap assumptions",
+    "A model-quality gate cannot establish a causal route-safety benefit"
+  ]
+}

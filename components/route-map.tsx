@@ -29,12 +29,15 @@ export default function RouteMap({result,selected,origin,destination,showCrashes
       L.polyline(points,{color:isSelected?"#3548e8":"#8491d0",weight:isSelected?6:3.5,bubblingMouseEvents:false}).on("click",event=>{if(handlers.current.pickTarget)handlers.current.onPick([event.latlng.lng,event.latlng.lat]);else handlers.current.onSelect(route.id)}).addTo(group);
     }
     const chosen=routes.find(r=>r.id===selected);
+    const streetMatches=new Set(chosen?.roadEvidence?.matchedCrashes.map(crash=>crash.id)||[]),nodeMatches=new Map(chosen?.roadEvidence?.intersectionCrashes?.map(crash=>[crash.id,crash.roadMatch?.nodeId])||[]);
     if(showCrashes)for(const crash of chosen?.crashes||[]){
       const element=document.createElement("div");element.className="crash-popup";
       const title=document.createElement("b");title.textContent=crash.street;
       const date=document.createElement("p");date.textContent=`Reported ${crash.date}`;
       const detail=document.createElement("p");detail.textContent=`${crash.injured} injured · ${crash.killed} killed in this incident`;
       element.appendChild(title);element.appendChild(date);element.appendChild(detail);
+      const context=document.createElement("p");context.textContent=nodeMatches.has(crash.id)?`Separate intersection context · node ${nodeMatches.get(crash.id)}`:streetMatches.has(crash.id)?"Rule-based match to a route street":"Nearby report · not associated with this route";element.appendChild(context);
+      if(crash.crossStreet){const cross=document.createElement("p");cross.textContent=`Reported nearest cross street: ${crash.crossStreet}`;element.appendChild(cross)}
       L.circleMarker(latLng(crash.coordinate),{radius:4,color:"white",weight:1.4,fillColor:crash.killed>0?"#c13c39":"#dca13b",fillOpacity:0.95,bubblingMouseEvents:false}).bindPopup(element).addTo(group);
     }
     for(const [place,color] of [[origin,"#3548e8"],[destination,"#19243e"]] as const)L.circleMarker(latLng(place.coordinate),{radius:8,color:"white",weight:3,fillColor:color,fillOpacity:1,interactive:false}).addTo(group);

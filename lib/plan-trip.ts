@@ -3,7 +3,7 @@ import { fetchRoads, matchRouteEvidence, type RouteStep } from "@/lib/road-match
 const ROUTER="https://valhalla1.openstreetmap.de/route";
 const DATA="https://data.cityofnewyork.us/resource/h9gi-nx95.json";
 const WINDOW="2024–2025",RADIUS=60,LIMIT=10000;
-type RawCrash={collision_id?:string;crash_date?:string;latitude?:string;longitude?:string;number_of_persons_injured?:string;number_of_persons_killed?:string;on_street_name?:string};
+type RawCrash={collision_id?:string;crash_date?:string;latitude?:string;longitude?:string;number_of_persons_injured?:string;number_of_persons_killed?:string;on_street_name?:string;off_street_name?:string};
 export async function fetchTrip(origin:Coordinate,destination:Coordinate,travelMode:TravelMode,signal?:AbortSignal):Promise<PlanResult> {
     const payload={locations:[{lat:origin[1],lon:origin[0]},{lat:destination[1],lon:destination[0]}],costing:travelMode,alternates:2,units:"kilometers",format:"osrm",shape_format:"geojson"};
     const response=await fetch(`${ROUTER}?json=${encodeURIComponent(JSON.stringify(payload))}`,{signal:AbortSignal.any([AbortSignal.timeout(18000),...(signal?[signal]:[])])});
@@ -17,7 +17,7 @@ export async function fetchTrip(origin:Coordinate,destination:Coordinate,travelM
     const west=Math.min(...points.map(p=>p[0]))-0.001,east=Math.max(...points.map(p=>p[0]))+0.001;
     const south=Math.min(...points.map(p=>p[1]))-0.001,north=Math.max(...points.map(p=>p[1]))+0.001;
     const modeFields=travelMode==="bicycle"?["number_of_cyclist_injured","number_of_cyclist_killed"]:travelMode==="pedestrian"?["number_of_pedestrians_injured","number_of_pedestrians_killed"]:["number_of_motorist_injured","number_of_motorist_killed"];
-    const query=`SELECT collision_id,crash_date,latitude,longitude,on_street_name,number_of_persons_injured,number_of_persons_killed WHERE crash_date >= '2024-01-01T00:00:00.000' AND crash_date < '2026-01-01T00:00:00.000' AND latitude BETWEEN ${south.toFixed(6)} AND ${north.toFixed(6)} AND longitude BETWEEN ${west.toFixed(6)} AND ${east.toFixed(6)} AND (${modeFields[0]} > 0 OR ${modeFields[1]} > 0) ORDER BY crash_date DESC,collision_id DESC LIMIT ${LIMIT+1}`;
+    const query=`SELECT collision_id,crash_date,latitude,longitude,on_street_name,off_street_name,number_of_persons_injured,number_of_persons_killed WHERE crash_date >= '2024-01-01T00:00:00.000' AND crash_date < '2026-01-01T00:00:00.000' AND latitude BETWEEN ${south.toFixed(6)} AND ${north.toFixed(6)} AND longitude BETWEEN ${west.toFixed(6)} AND ${east.toFixed(6)} AND (${modeFields[0]} > 0 OR ${modeFields[1]} > 0) ORDER BY crash_date DESC,collision_id DESC LIMIT ${LIMIT+1}`;
     try {
       const crashResponse=await fetch(`${DATA}?${new URLSearchParams({"$query":query})}`,{signal:AbortSignal.any([AbortSignal.timeout(22000),...(signal?[signal]:[])])});
       if(!crashResponse.ok)throw new Error("dataset-unavailable");
@@ -27,7 +27,7 @@ export async function fetchTrip(origin:Coordinate,destination:Coordinate,travelM
       for(const r of records.slice(0,LIMIT)){
         const coordinate:Coordinate=[Number(r.longitude),Number(r.latitude)];
         if(!r.collision_id||!r.crash_date||!isNYCCoordinate(coordinate))continue;
-        unique.set(r.collision_id,{id:r.collision_id,date:r.crash_date.slice(0,10),coordinate,injured:Math.max(0,Number(r.number_of_persons_injured)||0),killed:Math.max(0,Number(r.number_of_persons_killed)||0),street:r.on_street_name?.trim()||"Location from police report"});
+        unique.set(r.collision_id,{id:r.collision_id,date:r.crash_date.slice(0,10),coordinate,injured:Math.max(0,Number(r.number_of_persons_injured)||0),killed:Math.max(0,Number(r.number_of_persons_killed)||0),street:r.on_street_name?.trim()||"Location from police report",crossStreet:r.off_street_name?.trim()});
       }
       const crashes=Array.from(unique.values());
       routes.forEach(route=>route.crashes=nearbyCrashes(crashes,route.coordinates,RADIUS));

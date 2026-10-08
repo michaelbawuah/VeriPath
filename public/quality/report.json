@@ -1,0 +1,442 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "Ground street segments and conservative named shared-node contexts, v2",
+  "snapshotWindow": "2021\u20132025",
+  "records": 196266,
+  "counts": {
+    "intersection": 84500,
+    "strong": 29368,
+    "ambiguous": 66388,
+    "missing_coordinates": 13492,
+    "unmatched": 555,
+    "outside_bounding_area": 1963
+  },
+  "byBorough": {
+    "BROOKLYN": {
+      "intersection": 28849,
+      "ambiguous": 9609,
+      "strong": 8307,
+      "missing_coordinates": 775,
+      "unmatched": 153,
+      "outside_bounding_area": 501
+    },
+    "MANHATTAN": {
+      "strong": 4369,
+      "intersection": 12133,
+      "ambiguous": 5922,
+      "missing_coordinates": 481,
+      "outside_bounding_area": 383,
+      "unmatched": 59
+    },
+    "Unknown": {
+      "ambiguous": 35900,
+      "strong": 7503,
+      "intersection": 7494,
+      "missing_coordinates": 11010,
+      "outside_bounding_area": 402,
+      "unmatched": 101
+    },
+    "QUEENS": {
+      "ambiguous": 8616,
+      "strong": 4466,
+      "intersection": 21432,
+      "missing_coordinates": 593,
+      "unmatched": 110,
+      "outside_bounding_area": 366
+    },
+    "STATEN ISLAND": {
+      "intersection": 2960,
+      "ambiguous": 998,
+      "strong": 637,
+      "missing_coordinates": 103,
+      "outside_bounding_area": 59,
+      "unmatched": 22
+    },
+    "BRONX": {
+      "strong": 4086,
+      "intersection": 11632,
+      "ambiguous": 5343,
+      "missing_coordinates": 530,
+      "outside_bounding_area": 252,
+      "unmatched": 110
+    }
+  },
+  "byMode": {
+    "auto": {
+      "intersection": 45813,
+      "strong": 18734,
+      "ambiguous": 43921,
+      "missing_coordinates": 10030,
+      "unmatched": 324,
+      "outside_bounding_area": 1034
+    },
+    "pedestrian": {
+      "strong": 6063,
+      "intersection": 22056,
+      "ambiguous": 12414,
+      "missing_coordinates": 1849,
+      "unmatched": 168,
+      "outside_bounding_area": 487
+    },
+    "bicycle": {
+      "strong": 3537,
+      "ambiguous": 7678,
+      "intersection": 12477,
+      "missing_coordinates": 1268,
+      "outside_bounding_area": 341,
+      "unmatched": 50
+    }
+  },
+  "byYear": {
+    "2021": {
+      "intersection": 15198,
+      "strong": 5797,
+      "ambiguous": 14289,
+      "missing_coordinates": 3180,
+      "unmatched": 34,
+      "outside_bounding_area": 311
+    },
+    "2022": {
+      "strong": 6096,
+      "missing_coordinates": 3495,
+      "intersection": 15128,
+      "ambiguous": 13889,
+      "outside_bounding_area": 696,
+      "unmatched": 32
+    },
+    "2023": {
+      "intersection": 16627,
+      "ambiguous": 14201,
+      "strong": 6391,
+      "missing_coordinates": 3090,
+      "unmatched": 39,
+      "outside_bounding_area": 124
+    },
+    "2024": {
+      "intersection": 17819,
+      "ambiguous": 12431,
+      "missing_coordinates": 3291,
+      "strong": 6396,
+      "outside_bounding_area": 195,
+      "unmatched": 97
+    },
+    "2025": {
+      "intersection": 19728,
+      "ambiguous": 11578,
+      "strong": 4688,
+      "missing_coordinates": 436,
+      "outside_bounding_area": 637,
+      "unmatched": 353
+    }
+  },
+  "streetFields": {
+    "on_street_name": "Reported collision street",
+    "off_street_name": "Nearest cross street; not proof of intersection involvement",
+    "cross_street_name": "Address/location text; never used as a cross-street pair"
+  },
+  "rules": {
+    "segmentMaximumMeters": 20,
+    "nodeMaximumMeters": 15,
+    "nodeMarginMeters": 10,
+    "nodeEndpointCoherenceMeters": 3,
+    "routeNodeProximityMeters": 12,
+    "routeNodeEndpointExclusionMeters": 15,
+    "routeNodeBranchSampleMeters": [
+      5,
+      45
+    ],
+    "routeNodeMinimumBranchAngleDegrees": 60,
+    "requireBothStreetNames": true,
+    "requireDistinctStreetFamiliesAndPhysicalIds": true,
+    "groundOnly": true
+  },
+  "review": {
+    "representativeCases": 200,
+    "challengeCases": 60,
+    "reviewed": 0,
+    "accuracy": null,
+    "status": "Awaiting independent review; coverage is not correctness",
+    "seed": "veripath-review-2026-10-08-v1",
+    "strata": [
+      {
+        "borough": "BRONX",
+        "status": "ambiguous",
+        "population": 5343,
+        "selected": 3,
+        "inclusionProbability": 0.0005614823133071309
+      },
+      {
+        "borough": "BRONX",
+        "status": "intersection",
+        "population": 11632,
+        "selected": 10,
+        "inclusionProbability": 0.0008596973865199449
+      },
+      {
+        "borough": "BRONX",
+        "status": "missing_coordinates",
+        "population": 530,
+        "selected": 2,
+        "inclusionProbability": 0.0037735849056603774
+      },
+      {
+        "borough": "BRONX",
+        "status": "outside_bounding_area",
+        "population": 252,
+        "selected": 2,
+        "inclusionProbability": 0.007936507936507936
+      },
+      {
+        "borough": "BRONX",
+        "status": "strong",
+        "population": 4086,
+        "selected": 2,
+        "inclusionProbability": 0.0004894762604013706
+      },
+      {
+        "borough": "BRONX",
+        "status": "unmatched",
+        "population": 110,
+        "selected": 2,
+        "inclusionProbability": 0.01818181818181818
+      },
+      {
+        "borough": "BROOKLYN",
+        "status": "ambiguous",
+        "population": 9609,
+        "selected": 8,
+        "inclusionProbability": 0.000832552815069206
+      },
+      {
+        "borough": "BROOKLYN",
+        "status": "intersection",
+        "population": 28849,
+        "selected": 27,
+        "inclusionProbability": 0.000935907657111165
+      },
+      {
+        "borough": "BROOKLYN",
+        "status": "missing_coordinates",
+        "population": 775,
+        "selected": 2,
+        "inclusionProbability": 0.0025806451612903226
+      },
+      {
+        "borough": "BROOKLYN",
+        "status": "outside_bounding_area",
+        "population": 501,
+        "selected": 2,
+        "inclusionProbability": 0.003992015968063872
+      },
+      {
+        "borough": "BROOKLYN",
+        "status": "strong",
+        "population": 8307,
+        "selected": 7,
+        "inclusionProbability": 0.0008426628144938004
+      },
+      {
+        "borough": "BROOKLYN",
+        "status": "unmatched",
+        "population": 153,
+        "selected": 2,
+        "inclusionProbability": 0.013071895424836602
+      },
+      {
+        "borough": "MANHATTAN",
+        "status": "ambiguous",
+        "population": 5922,
+        "selected": 4,
+        "inclusionProbability": 0.0006754474839581223
+      },
+      {
+        "borough": "MANHATTAN",
+        "status": "intersection",
+        "population": 12133,
+        "selected": 10,
+        "inclusionProbability": 0.0008241984669908514
+      },
+      {
+        "borough": "MANHATTAN",
+        "status": "missing_coordinates",
+        "population": 481,
+        "selected": 2,
+        "inclusionProbability": 0.004158004158004158
+      },
+      {
+        "borough": "MANHATTAN",
+        "status": "outside_bounding_area",
+        "population": 383,
+        "selected": 2,
+        "inclusionProbability": 0.005221932114882507
+      },
+      {
+        "borough": "MANHATTAN",
+        "status": "strong",
+        "population": 4369,
+        "selected": 3,
+        "inclusionProbability": 0.000686655985351339
+      },
+      {
+        "borough": "MANHATTAN",
+        "status": "unmatched",
+        "population": 59,
+        "selected": 2,
+        "inclusionProbability": 0.03389830508474576
+      },
+      {
+        "borough": "QUEENS",
+        "status": "ambiguous",
+        "population": 8616,
+        "selected": 7,
+        "inclusionProbability": 0.0008124419684308263
+      },
+      {
+        "borough": "QUEENS",
+        "status": "intersection",
+        "population": 21432,
+        "selected": 20,
+        "inclusionProbability": 0.000933184023889511
+      },
+      {
+        "borough": "QUEENS",
+        "status": "missing_coordinates",
+        "population": 593,
+        "selected": 2,
+        "inclusionProbability": 0.003372681281618887
+      },
+      {
+        "borough": "QUEENS",
+        "status": "outside_bounding_area",
+        "population": 366,
+        "selected": 2,
+        "inclusionProbability": 0.00546448087431694
+      },
+      {
+        "borough": "QUEENS",
+        "status": "strong",
+        "population": 4466,
+        "selected": 3,
+        "inclusionProbability": 0.0006717420510523958
+      },
+      {
+        "borough": "QUEENS",
+        "status": "unmatched",
+        "population": 110,
+        "selected": 2,
+        "inclusionProbability": 0.01818181818181818
+      },
+      {
+        "borough": "STATEN ISLAND",
+        "status": "ambiguous",
+        "population": 998,
+        "selected": 2,
+        "inclusionProbability": 0.002004008016032064
+      },
+      {
+        "borough": "STATEN ISLAND",
+        "status": "intersection",
+        "population": 2960,
+        "selected": 2,
+        "inclusionProbability": 0.0006756756756756757
+      },
+      {
+        "borough": "STATEN ISLAND",
+        "status": "missing_coordinates",
+        "population": 103,
+        "selected": 2,
+        "inclusionProbability": 0.019417475728155338
+      },
+      {
+        "borough": "STATEN ISLAND",
+        "status": "outside_bounding_area",
+        "population": 59,
+        "selected": 2,
+        "inclusionProbability": 0.03389830508474576
+      },
+      {
+        "borough": "STATEN ISLAND",
+        "status": "strong",
+        "population": 637,
+        "selected": 2,
+        "inclusionProbability": 0.0031397174254317113
+      },
+      {
+        "borough": "STATEN ISLAND",
+        "status": "unmatched",
+        "population": 22,
+        "selected": 2,
+        "inclusionProbability": 0.09090909090909091
+      },
+      {
+        "borough": "Unknown",
+        "status": "ambiguous",
+        "population": 35900,
+        "selected": 35,
+        "inclusionProbability": 0.0009749303621169916
+      },
+      {
+        "borough": "Unknown",
+        "status": "intersection",
+        "population": 7494,
+        "selected": 6,
+        "inclusionProbability": 0.0008006405124099279
+      },
+      {
+        "borough": "Unknown",
+        "status": "missing_coordinates",
+        "population": 11010,
+        "selected": 9,
+        "inclusionProbability": 0.0008174386920980927
+      },
+      {
+        "borough": "Unknown",
+        "status": "outside_bounding_area",
+        "population": 402,
+        "selected": 2,
+        "inclusionProbability": 0.004975124378109453
+      },
+      {
+        "borough": "Unknown",
+        "status": "strong",
+        "population": 7503,
+        "selected": 6,
+        "inclusionProbability": 0.0007996801279488205
+      },
+      {
+        "borough": "Unknown",
+        "status": "unmatched",
+        "population": 101,
+        "selected": 2,
+        "inclusionProbability": 0.019801980198019802
+      }
+    ]
+  },
+  "sources": {
+    "crashes": "https://data.cityofnewyork.us/resource/h9gi-nx95.json",
+    "roads": "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/LION/FeatureServer/0"
+  },
+  "hashes": {
+    "crashes": "494b0040ec5e413ae0568a44a64b6cb20245d4a89b768f84c890c9ad59b4fd55",
+    "roads": "9c2a4b3e547fc2a10bdfbd651637109b49657fd7f1de3bf5ba29731f2b7be0fe",
+    "matcher": "60b9e891ea66091b4c622db1c43cb242e5b52966b6bcb3b252cce83b001b4b6e",
+    "intersections": "18370a245ecc3360d1c6c6f884cb23b6ef372ae9ff59613a837b2d87da8bf7d4",
+    "audit": "48cd1e86e5a35c87447e1730578d058311a6b6c8ece90763f103e16b4191f217",
+    "browserMatcher": "66638875eb15d6dcaf37f1921e45b04d95397320ab9f3ef7acd83e482c77df7b",
+    "browserIntersections": "15fbb0d8d12ca9b8d787ef30edae5438a66032b643b88800823fe7fdb08076f5",
+    "quarantine": "f02b01ffc7bab0cc4272474fde00f9a1152f3236e748daa111bd9111861a58ea",
+    "matcherBinary": "e5350ef8ad9ad9bf7b71f8f75ebf4cb6a00c3c0727368f1e6adb6ca1060138db",
+    "reviewCases": "c89e416291cdc24d2c1bf9ffed544c38bd780c5a0253f9cd2e7d8a92c49e138c",
+    "sampling": "16f03b1a6d5d493af9d5b70d7de2976d4fc2cee61db4afb26be16554783388ad",
+    "predictions": "23da84f1cea31ac09f0b8d311d8e3dc93d4438e43dc01a374b5266b5a6e6a965"
+  },
+  "limitations": [
+    "Current road geometry is used retrospectively.",
+    "Intersection association is context, not responsibility, approach, turn or risk.",
+    "Rules have not been independently calibrated.",
+    "Missing-coordinate records remain in the overall coverage denominator.",
+    "Mode groups overlap; a collision counts once overall.",
+    "Challenge cases sample named-node and ambiguous assignments; they do not guarantee coverage of every difficult topology or estimate population accuracy.",
+    "Review blinding hides predictions and sampling strata in the interface; repository access is not a secure barrier."
+  ]
+}

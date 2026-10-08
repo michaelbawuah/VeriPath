@@ -3,7 +3,7 @@ import type { RoadEvidence, RoadMatch, RouteStep } from "./road-matching";
 export type Coordinate = [number, number];
 export type TravelMode = "bicycle" | "auto" | "pedestrian";
 export type Place = { id: string; name: string; area: string; coordinate: Coordinate };
-export type Crash = { id: string; date: string; coordinate: Coordinate; injured: number; killed: number; street: string; roadMatch?:RoadMatch };
+export type Crash = { id: string; date: string; coordinate: Coordinate; injured: number; killed: number; street: string; crossStreet?:string; roadMatch?:RoadMatch };
 export type PlannedRoute = { id: string; seconds: number; meters: number; coordinates: Coordinate[]; crashes: Crash[]; steps?:RouteStep[]; roadEvidence?:RoadEvidence };
 export type PlanResult = { routes: PlannedRoute[]; crashes: Crash[]; evidence: { available: boolean; truncated: boolean; fetchedAt: string; recordsInArea: number; window: string; radiusMeters: number; error?: string }; routingFetchedAt: string };
 export const PLACES: Place[] = [
