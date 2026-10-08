@@ -11,6 +11,34 @@
     "unmatched": 555,
     "outside_bounding_area": 1963
   },
+  "withheldReasons": {
+    "competing_level_uncertainty": 4922,
+    "selected_level_unusable": 5910,
+    "candidate_margin_below_6m": 42696,
+    "missing_or_invalid_coordinates": 13492,
+    "unconfirmed_name_margin_below_12m": 4505,
+    "nearby_junction_unresolved": 2771,
+    "selected_geometry_conflict": 4255,
+    "selected_distance_exceeds_20m": 1329,
+    "no_candidate_within_35m": 555,
+    "outside_bounding_area": 1963
+  },
+  "assignmentRegression": {
+    "comparedRecords": 180811,
+    "changedAssignments": 0,
+    "baselineSha256": "3fe9087447cfe974508a3ae5377a7d8d01dea85fe9b9ad635e96a711e9ef62da",
+    "baselineSourceCommit": "8616f5dc717c12de341305ec35ee1460e17f3a65",
+    "comparedFields": [
+      "id",
+      "road_id",
+      "status",
+      "distance_m",
+      "margin_m",
+      "street_agrees",
+      "node_id"
+    ]
+  },
+  "diagnosticPolicy": "One primary reason follows fixed rule precedence; multiple conditions can fail. Assignment decisions and thresholds are unchanged.",
   "byBorough": {
     "BROOKLYN": {
       "intersection": 28849,
@@ -419,16 +447,17 @@
   "hashes": {
     "crashes": "494b0040ec5e413ae0568a44a64b6cb20245d4a89b768f84c890c9ad59b4fd55",
     "roads": "9c2a4b3e547fc2a10bdfbd651637109b49657fd7f1de3bf5ba29731f2b7be0fe",
-    "matcher": "60b9e891ea66091b4c622db1c43cb242e5b52966b6bcb3b252cce83b001b4b6e",
+    "matcher": "8e375885f079a452ebbb1e12bbd7bb12beb23da83eced594297d9fafed4ac0e2",
     "intersections": "18370a245ecc3360d1c6c6f884cb23b6ef372ae9ff59613a837b2d87da8bf7d4",
-    "audit": "48cd1e86e5a35c87447e1730578d058311a6b6c8ece90763f103e16b4191f217",
-    "browserMatcher": "66638875eb15d6dcaf37f1921e45b04d95397320ab9f3ef7acd83e482c77df7b",
+    "audit": "63b3d061bff67fd1344d4ea996bc04579ed2d7050d7fd1545cfb5e8a303f3256",
+    "browserMatcher": "049ef6c329170ad1c174fe5fb3b68ba638e1cdf0da3a11694912a29c90224ad5",
     "browserIntersections": "15fbb0d8d12ca9b8d787ef30edae5438a66032b643b88800823fe7fdb08076f5",
     "quarantine": "f02b01ffc7bab0cc4272474fde00f9a1152f3236e748daa111bd9111861a58ea",
-    "matcherBinary": "e5350ef8ad9ad9bf7b71f8f75ebf4cb6a00c3c0727368f1e6adb6ca1060138db",
+    "matcherBinary": "7c3e5073df256987abc61874a3b3166f70863899ac1f66c6c379126564a096bb",
+    "reasonCatalog": "102912cba1776b4186c2f98b0084bfe34a769b5b627787b0d4cec09c65bc9b4a",
     "reviewCases": "c89e416291cdc24d2c1bf9ffed544c38bd780c5a0253f9cd2e7d8a92c49e138c",
     "sampling": "16f03b1a6d5d493af9d5b70d7de2976d4fc2cee61db4afb26be16554783388ad",
-    "predictions": "23da84f1cea31ac09f0b8d311d8e3dc93d4438e43dc01a374b5266b5a6e6a965"
+    "predictions": "6980caa5677036b565b48bfd60bd53d16b1d479fd4acb7b19def1396877ab4e2"
   },
   "limitations": [
     "Current road geometry is used retrospectively.",

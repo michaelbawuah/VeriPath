@@ -48,5 +48,25 @@ class ReviewTests(unittest.TestCase):
         result = self.run_eval()['cohorts']['representative']['metrics']
         self.assertEqual(result['outOfScopeAcceptance']['estimate'], 1)
         self.assertEqual(result['intersectionPrecision']['rawDenominator'], 0)
+    def test_malformed_review_values_fail_cleanly(self):
+        for raw in (None, [], 42):
+            with self.subTest(raw=raw):
+                self.reviews[0] = raw
+                with self.assertRaises(ValueError): self.run_eval()
+        self.setUp()
+        for key, value in [('reviewerId', 42), ('schemaVersion', True)]:
+            self.reviews[0][key] = value
+            with self.assertRaises(ValueError): self.run_eval()
+            self.setUp()
+        for key, value in [('rationale', 123), ('reviewedAt', 123), ('associationType', []), ('reviewedAt', '2026-10-08 12:00:00Z'), ('reviewedAt', '2026-10-08T24:00:00Z'), ('reviewedAt', '2026-10-08T12:60:00Z'), ('reviewedAt', '2026-10-08T12:00:60Z')]:
+            self.reviews[0]['labels']['1'][key] = value
+            with self.assertRaises(ValueError): self.run_eval()
+            self.setUp()
+    def test_empty_cohort_has_no_population_estimate(self):
+        self.sampling['1'].update(cohort='challenge', inclusionProbability=None)
+        self.assertFalse(self.run_eval()['cohorts']['representative']['populationEstimatesAvailable'])
+    def test_unnecessary_adjudication_rejected(self):
+        third = {'schemaVersion': 1, 'reviewerId': 'c', 'hashes': self.hashes, 'labels': {'1': self.label}}
+        with self.assertRaises(ValueError): self.run_eval(third)
 
 if __name__ == '__main__': unittest.main()

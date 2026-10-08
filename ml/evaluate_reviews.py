@@ -8,6 +8,7 @@ import datetime
 import hashlib
 import json
 import pathlib
+import re
 
 TYPES = {'segment', 'intersection', 'ambiguous', 'insufficient_location', 'outside_scope'}
 SUPPORTED = {'segment', 'intersection'}
@@ -21,18 +22,24 @@ def shared_nodes(case):
     return {node for node, roads in endpoints.items() if len(roads) > 1}
 
 def validate_review(review, cases, hashes):
-    if review.get('schemaVersion') != 1 or review.get('hashes') != hashes:
+    if not isinstance(review,dict):
+        raise ValueError('Review must be an object')
+    if type(review.get('schemaVersion')) is not int or review['schemaVersion'] != 1 or review.get('hashes') != hashes:
         raise ValueError('Review snapshot hashes/schema do not match the frozen report')
-    if not str(review.get('reviewerId', '')).strip():
+    if not isinstance(review.get('reviewerId'),str) or not review['reviewerId'].strip() or len(review['reviewerId'].strip())>80:
         raise ValueError('A nonempty reviewerId is required')
     labels = review.get('labels')
     if not isinstance(labels, dict):
         raise ValueError('labels must be an object keyed by collision ID')
     for case_id, label in labels.items():
-        if case_id not in cases or label.get('associationType') not in TYPES:
+        if not isinstance(label,dict):
+            raise ValueError('Every decision must be an object')
+        if case_id not in cases or not isinstance(label.get('associationType'),str) or label['associationType'] not in TYPES:
             raise ValueError('Unknown case or association type')
-        if len(str(label.get('rationale', '')).strip()) < 10:
+        if not isinstance(label.get('rationale'),str) or len(label['rationale'].strip()) < 10 or len(label['rationale'])>10000:
             raise ValueError('Every decision needs an evidence rationale')
+        if not isinstance(label.get('reviewedAt'),str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)',label['reviewedAt']):
+            raise ValueError('Every decision needs a string reviewedAt timestamp')
         try:
             timestamp = datetime.datetime.fromisoformat(label['reviewedAt'].replace('Z', '+00:00'))
             if timestamp.tzinfo is None:
@@ -63,10 +70,12 @@ def metric(numerator, denominator, raw_denominator, complete):
             'weightedDenominator': denominator}
 
 def evaluate(cases, sampling, predictions, hashes, reviews, adjudication=None):
-    if len(reviews) != 2 or str(reviews[0].get('reviewerId','')).strip().casefold() == str(reviews[1].get('reviewerId','')).strip().casefold():
+    if not isinstance(reviews,list) or len(reviews) != 2:
         raise ValueError('Exactly two distinct independent reviewers are required')
     decisions = [validate_review(review, cases, hashes) for review in reviews]
-    adjudicated = validate_review(adjudication, cases, hashes) if adjudication else {}
+    if reviews[0]['reviewerId'].strip().casefold() == reviews[1]['reviewerId'].strip().casefold():
+        raise ValueError('Exactly two distinct independent reviewers are required')
+    adjudicated = validate_review(adjudication, cases, hashes) if adjudication is not None else {}
     if adjudication and adjudication['reviewerId'].strip().casefold() in {r['reviewerId'].strip().casefold() for r in reviews}:
         raise ValueError('Adjudicator must be independent of both reviewers')
     if set(sampling) != set(cases) or set(predictions) != set(cases):
@@ -80,6 +89,7 @@ def evaluate(cases, sampling, predictions, hashes, reviews, adjudication=None):
                 raise ValueError('Adjudication requires two independent decisions')
             continue
         if identity(first) == identity(second):
+            if case_id in adjudicated:raise ValueError('Adjudication is only valid for a disagreement')
             agreed += 1
             final[case_id] = first
         else:
@@ -91,7 +101,7 @@ def evaluate(cases, sampling, predictions, hashes, reviews, adjudication=None):
     cohorts = {}
     for cohort in ('representative', 'challenge'):
         ids = [case_id for case_id, row in sampling.items() if row['cohort'] == cohort]
-        complete = all(case_id in final for case_id in ids)
+        complete = bool(ids) and all(case_id in final for case_id in ids)
         totals = {name: [0., 0., 0] for name in ('segmentPrecision', 'intersectionPrecision', 'supportedAssociationRecall', 'unsupportedAcceptance', 'outOfScopeAcceptance')}
         abstentions = {'correctWithholding': 0, 'missedSupported': 0, 'outsideScope': 0}
         for case_id in ids:

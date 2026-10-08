@@ -1,0 +1,13 @@
+{
+  "no_candidate_within_35m": "No candidate road within 35 metres",
+  "selected_geometry_conflict": "Conflicting source geometry",
+  "selected_level_unusable": "Elevated, below-ground or unknown road level",
+  "competing_level_uncertainty": "Nearby road at an uncertain or different level",
+  "selected_distance_exceeds_20m": "Candidate more than 20 metres away",
+  "candidate_margin_below_6m": "Competing road candidates too close",
+  "unconfirmed_name_margin_below_12m": "Street name unconfirmed and margin too small",
+  "nearby_junction_unresolved": "Nearby junction needs more location evidence",
+  "missing_or_invalid_coordinates": "Missing or invalid coordinates",
+  "outside_bounding_area": "Coordinates outside audit bounds",
+  "route_not_confirmed": "Association with this route not confirmed"
+}

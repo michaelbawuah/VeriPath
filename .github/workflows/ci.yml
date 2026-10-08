@@ -19,6 +19,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec tsc --noEmit
       - run: node scripts/verify-veripath.mjs
+      - run: node scripts/verify-reviews.mjs
       - run: g++ -std=c++23 -O2 -Wall -Wextra -Werror engine/tests/road_matcher_test.cpp -o /tmp/road-match-tests
       - run: /tmp/road-match-tests
       - uses: actions/setup-python@v5

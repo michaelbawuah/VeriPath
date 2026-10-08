@@ -16,7 +16,7 @@ namespace veripath {
 constexpr double sx=111320.0*0.7575649843840493, sy=110540.0, cell=100.0;
 struct Point {double x,y;};
 struct Road {std::string id,physical,name,levels;std::vector<Point> line;std::string from{},to{};};
-struct Match {std::string id,status="unmatched";double distance=INFINITY,gap=0;bool named=false;};
+struct Match {std::string id,status="unmatched";double distance=INFINITY,gap=0;bool named=false;std::string reason="no_candidate_within_35m";};
 std::vector<std::string> split(const std::string&s,char delimiter){std::vector<std::string> out;std::stringstream in(s);std::string p;while(std::getline(in,p,delimiter))out.push_back(p);return out;}
 std::string normalize(std::string s){
   for(char&c:s)c=std::isalnum(static_cast<unsigned char>(c))?static_cast<char>(std::toupper(static_cast<unsigned char>(c))):' ';
@@ -46,13 +46,19 @@ class Index {
     Match out{r.id,"ambiguous",best.distance,std::isfinite(other)?other-best.distance:999.,best.named};
     const bool ground=r.levels=="MM";
     const bool grade_conflict=std::any_of(all_candidates.begin(),all_candidates.end(),[&](auto c){return roads[c.index].id!=r.id&&roads[c.index].levels!="MM"&&c.distance<=best.distance+6;});
-    if(ground&&!grade_conflict&&best.distance<=20&&out.gap>=6&&(best.named||out.gap>=12))out.status="strong";
+    if(ground&&!grade_conflict&&best.distance<=20&&out.gap>=6&&(best.named||out.gap>=12)){out.status="strong";out.reason="";}
+    else if(r.levels=="QQ")out.reason="selected_geometry_conflict";
+    else if(!ground)out.reason="selected_level_unusable";
+    else if(grade_conflict)out.reason="competing_level_uncertainty";
+    else if(best.distance>20)out.reason="selected_distance_exceeds_20m";
+    else if(out.gap<6)out.reason="candidate_margin_below_6m";
+    else out.reason="unconfirmed_name_margin_below_12m";
     return out;
   }
   std::pair<Match,std::string> locate(Point p,const std::string&street,const std::string&cross,const Junctions&junctions)const{
     auto context=junctions.nearby(p,roads,street,cross,true);auto match_result=match(p,street);
-    if(!context.empty()&&context[0].distance<=15&&context[0].gap>=10){bool grade_conflict=false;int gx=std::floor(p.x/cell),gy=std::floor(p.y/cell);std::unordered_set<size_t> seen;for(int x=gx-1;x<=gx+1;x++)for(int y=gy-1;y<=gy+1;y++){auto bucket=buckets.find(key(x,y));if(bucket==buckets.end())continue;for(auto i:bucket->second)if(seen.insert(i).second&&roads[i].levels!="MM"&&distance(p,roads[i])<=context[0].distance+6)grade_conflict=true;}if(!grade_conflict)return {Match{"","intersection",context[0].distance,context[0].gap,true},context[0].id};}
-    auto nearby=junctions.nearby(p,roads,street,cross,false);if(!nearby.empty()&&nearby[0].distance<=15&&match_result.status=="strong")match_result.status="ambiguous";
+    if(!context.empty()&&context[0].distance<=15&&context[0].gap>=10){bool grade_conflict=false;int gx=std::floor(p.x/cell),gy=std::floor(p.y/cell);std::unordered_set<size_t> seen;for(int x=gx-1;x<=gx+1;x++)for(int y=gy-1;y<=gy+1;y++){auto bucket=buckets.find(key(x,y));if(bucket==buckets.end())continue;for(auto i:bucket->second)if(seen.insert(i).second&&roads[i].levels!="MM"&&distance(p,roads[i])<=context[0].distance+6)grade_conflict=true;}if(!grade_conflict)return {Match{"","intersection",context[0].distance,context[0].gap,true,""},context[0].id};}
+    auto nearby=junctions.nearby(p,roads,street,cross,false);if(!nearby.empty()&&nearby[0].distance<=15&&match_result.status=="strong"){match_result.status="ambiguous";match_result.reason="nearby_junction_unresolved";}
     return {match_result,""};
   }
 };
@@ -61,7 +67,7 @@ class Index {
 int main(int argc,char**argv){
   using namespace veripath;const bool intersections=argc==4&&std::string(argv[3])=="--intersections";if(argc!=3&&!intersections){std::cerr<<"Usage: road_matcher roads.tsv crashes.tsv [--intersections]\n";return 2;}std::ifstream roads_in(argv[1]),crashes_in(argv[2]);if(!roads_in||!crashes_in){std::cerr<<"Cannot open input files\n";return 2;}
   std::vector<Road> roads;std::string line;while(std::getline(roads_in,line)){auto p=split(line,'\t');if(p.size()<5)continue;std::string names;for(auto name:split(p[2],'|')){if(!names.empty())names+='|';names+=normalize(name);}Road road{p[0],p[1],names,p[3],{},p.size()>5?p[5]:"",p.size()>6?p[6]:""};for(auto v:split(p[4],';')){auto c=split(v,',');if(c.size()==2)road.line.push_back(project(std::stod(c[0]),std::stod(c[1])));}if(road.line.size()>1)roads.push_back(std::move(road));}
-  Index index(std::move(roads));Junctions junctions(index.roads);std::cout<<"id\troad_id\tstatus\tdistance_m\tmargin_m\tstreet_agrees\tnode_id\n";
-  while(std::getline(crashes_in,line)){auto p=split(line,'\t');if(p.size()<4)continue;auto point=project(std::stod(p[1]),std::stod(p[2]));auto result=intersections?index.locate(point,p[3],p.size()>4?p[4]:"",junctions):std::pair<Match,std::string>{index.match(point,p[3]),""};auto m=result.first;std::cout<<p[0]<<'\t'<<m.id<<'\t'<<m.status<<'\t'<<m.distance<<'\t'<<m.gap<<'\t'<<m.named<<'\t'<<result.second<<'\n';}
+  Index index(std::move(roads));Junctions junctions(index.roads);std::cout<<"id\troad_id\tstatus\tdistance_m\tmargin_m\tstreet_agrees\tnode_id\treason_code\n";
+  while(std::getline(crashes_in,line)){auto p=split(line,'\t');if(p.size()<4)continue;auto point=project(std::stod(p[1]),std::stod(p[2]));auto result=intersections?index.locate(point,p[3],p.size()>4?p[4]:"",junctions):std::pair<Match,std::string>{index.match(point,p[3]),""};auto m=result.first;std::cout<<p[0]<<'\t'<<m.id<<'\t'<<m.status<<'\t'<<m.distance<<'\t'<<m.gap<<'\t'<<m.named<<'\t'<<result.second<<'\t'<<m.reason<<'\n';}
 }
 #endif

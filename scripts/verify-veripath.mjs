@@ -23,10 +23,10 @@ try{
   assert.deepEqual(nearbyCrashes([close,far],segmented,60),nearbyCrashes([close,far],line,60),'Route sampling density must not change counts');
   const routes=[{id:'slow',seconds:901},{id:'fast',seconds:600},{id:'limit',seconds:900}];
   assert.deepEqual(filterDetour(routes,5).map(r=>r.id),['fast','limit']); assert.equal(filterDetour(routes,null).length,3);
-  const quarantine=JSON.parse(await readFile('lib/road-quarantine.json','utf8'));
+  const quarantine=JSON.parse(await readFile('lib/road-quarantine.json','utf8')),reasonLabels=JSON.parse(await readFile('lib/matching-reasons.json','utf8'));
   const junctionSource=(await readFile('lib/intersections.ts','utf8')).replace('"./veripath"','"./helpers.mjs"');
   await writeFile(join(temporary,'intersections.mjs'),ts.transpileModule(junctionSource,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText);
-  const matchingSource=(await readFile('lib/road-matching.ts','utf8')).replace('import quarantine from "./road-quarantine.json";',`const quarantine=${JSON.stringify(quarantine)};`).replace('"@/lib/veripath"','"./helpers.mjs"').replace('"./intersections"','"./intersections.mjs"');
+  const matchingSource=(await readFile('lib/road-matching.ts','utf8')).replace('import quarantine from "./road-quarantine.json";',`const quarantine=${JSON.stringify(quarantine)};`).replace('"@/lib/veripath"','"./helpers.mjs"').replace('"./intersections"','"./intersections.mjs"').replace('import reasonLabels from "./matching-reasons.json";',`const reasonLabels=${JSON.stringify(reasonLabels)};`);
   await writeFile(join(temporary,'matching.mjs'),ts.transpileModule(matchingSource,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText);
   const {RoadIndex,matchRouteEvidence,normalizeStreet,fetchRoads}=await import(pathToFileURL(join(temporary,'matching.mjs')));
   assert.equal(normalizeStreet('West 42nd Street'),'W 42 ST');
@@ -42,10 +42,17 @@ try{
   const a={...close,coordinate:[-73.995,40.70002],street:'Main Street'},b={...close,id:'b',coordinate:[-73.995,40.7001],street:'Side Street'};
   const evidence=matchRouteEvidence([a,b],[{street:'Main St',coordinates:line}],[road,parallel]);
   assert.equal(evidence.matchedCrashes.length,1);assert.equal(evidence.offRouteCount,1);assert.equal(evidence.unmatchedCount,0);
-  assert.equal(evidence.routeCoverage,1);
+  assert.equal(evidence.routeCoverage,1);assert.equal(Object.values(evidence.withheldReasons).reduce((a,b)=>a+b,0),evidence.ambiguousCount+evidence.unmatchedCount+evidence.offRouteCount,'Route diagnostic counts must reconcile');
   const sx=111320*.7575649843840493,sy=110540,origin=[-73.99,40.7],point=(x,y)=>[origin[0]+x/sx,origin[1]+y/sy];
   const junctionRoads=[{id:'west',physical:'main',street:'Main St',levels:'MM',from:'w',to:'n',coordinates:[point(-100,0),point(0,0)]},{id:'east',physical:'main',street:'Main St',levels:'MM',from:'n',to:'e',coordinates:[point(0,0),point(100,0)]},{id:'north',physical:'side',street:'Side St',levels:'MM',from:'n',to:'s',coordinates:[point(0,0),point(0,100)]}];
   const junctionIndex=new RoadIndex(junctionRoads),atNode={...a,id:'node-crash',coordinate:point(1,1),street:'Main St',crossStreet:'Side St'};
+  const singleIndex=new RoadIndex([{...junctionRoads[0],coordinates:[point(-100,0),point(100,0)],from:undefined,to:undefined}]);
+  assert.equal(singleIndex.match(point(50,19.99),'Main St').reasonCode,null);
+  assert.equal(singleIndex.match(point(50,20.01),'Main St').reasonCode,'selected_distance_exceeds_20m');
+  assert.equal(singleIndex.match(point(50,35.01),'Main St').reasonCode,'no_candidate_within_35m');
+  assert.equal(singleIndex.match(point(50,1),'Unconfirmed name').reasonCode,null,'Existing unnamed-margin acceptance must remain unchanged');
+  assert.equal(junctionIndex.locate(point(-10,2),'Main St','').reasonCode,'nearby_junction_unresolved');
+  assert.equal(junctionIndex.locate(point(1,1),'Main St','').reasonCode,'candidate_margin_below_6m','An already ambiguous segment preserves its primary reason');
   assert.equal(junctionIndex.locate(atNode.coordinate,atNode.street,atNode.crossStreet).nodeId,'n');
   assert.equal(junctionIndex.locate(atNode.coordinate,atNode.street).status,'ambiguous');
   assert.equal(new RoadIndex(junctionRoads.slice(0,2)).junctions.nodes.length,0,'Same-family continuation is not a junction');
@@ -63,18 +70,20 @@ try{
   assert.equal(cases.filter(c=>sampling[c.id].cohort==='representative').length,200);
   assert.equal(cases.filter(c=>sampling[c.id].cohort==='challenge').length,60);
   assert.equal(Object.values(report.counts).reduce((a,b)=>a+b,0),report.records,'Every source report must appear in exactly one coverage category');
+  assert.equal(Object.values(report.withheldReasons).reduce((a,b)=>a+b,0),report.records-report.counts.strong-report.counts.intersection,'Withholding reasons must account for all withheld source reports');
+  assert.equal(report.assignmentRegression.changedAssignments,0);assert.equal(report.assignmentRegression.comparedRecords,180811);
   assert.equal(report.review.accuracy,null,'Independent accuracy must not be invented');
   let parityCases=0;
   for(const item of cases){
     assert(!('cohort' in item||'population' in item||'inclusionProbability' in item||'status' in item),'Reviewer packet must not expose sampling strata or predictions');
     const expected=predictions[item.id];if(!['strong','intersection','ambiguous','unmatched'].includes(expected.status))continue;
     const actual=new RoadIndex(item.roads).locate(item.coordinate,item.onStreet,item.nearestCrossStreet);
-    assert.equal(actual.status,expected.status,`C++/browser status parity for collision ${item.id}`);
+    assert.equal(actual.status,expected.status,`C++/browser status parity for collision ${item.id}`);assert.equal(actual.reasonCode,expected.reasonCode,`C++/browser reason parity for collision ${item.id}`);
     if(actual.status==='intersection')assert.equal(actual.nodeId,expected.nodeId,`C++/browser node parity for ${item.id}`);
     else assert.equal(actual.roadId,expected.roadId,`C++/browser segment parity for ${item.id}`);
     parityCases++;
   }
-  for(const [key,path] of Object.entries({matcher:'engine/road_matcher.cpp',intersections:'engine/intersections.hpp',audit:'ml/audit_matching.py',browserMatcher:'lib/road-matching.ts',browserIntersections:'lib/intersections.ts',quarantine:'lib/road-quarantine.json',reviewCases:'public/quality/cases.json',sampling:'ml/audit/sampling.json',predictions:'ml/audit/predictions.json'}))assert.equal(createHash('sha256').update(await readFile(path)).digest('hex'),report.hashes[key],`Frozen audit hash: ${key}`);
+  for(const [key,path] of Object.entries({matcher:'engine/road_matcher.cpp',intersections:'engine/intersections.hpp',audit:'ml/audit_matching.py',browserMatcher:'lib/road-matching.ts',browserIntersections:'lib/intersections.ts',quarantine:'lib/road-quarantine.json',reasonCatalog:'lib/matching-reasons.json',reviewCases:'public/quality/cases.json',sampling:'ml/audit/sampling.json',predictions:'ml/audit/predictions.json'}))assert.equal(createHash('sha256').update(await readFile(path)).digest('hex'),report.hashes[key],`Frozen audit hash: ${key}`);
   assert(parityCases>150,'Parity must cover real frozen cases, not just synthetic fixtures');
   console.log(`Passed: ${parityCases} frozen C++/browser associations agree; coverage accounting, packet blinding and source hashes verified.`);
   assert.deepEqual(matchRouteEvidence([a,b],[{street:'Main St',coordinates:segmented}],[road,parallel]).matchedCrashes.map(c=>c.id),evidence.matchedCrashes.map(c=>c.id));

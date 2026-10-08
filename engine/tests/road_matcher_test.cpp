@@ -23,5 +23,18 @@ int main(){using namespace veripath;
   for(const auto&level:{"AA","","QQ"}){auto elevated=junction_roads;elevated[2].levels=level;Junctions rejected(elevated);assert(rejected.nodes.empty());}
   auto competing=junction_roads;competing.push_back({"bridge2","bridge","BRIDGE RD","AA",{{-100,2},{100,2}}});Index stacked(competing);Junctions stacked_nodes(competing);assert(stacked.locate({1,1},"Main St","Side St",stacked_nodes).first.status=="ambiguous");
   auto adjacent=junction_roads;adjacent.push_back({"close-main","p3","MAIN ST","MM",{{8,0},{100,0}},"n2","e2"});adjacent.push_back({"close-side","p4","SIDE ST","MM",{{8,0},{8,100}},"n2","s2"});Index close_nodes(adjacent);Junctions alternatives(adjacent);assert(close_nodes.locate({1,1},"Main St","Side St",alternatives).first.status=="ambiguous");
+  Index single({{"plain","p","MAIN ST","MM",{{0,0},{200,0}}}});
+  assert(single.match({50,20},"Main St").status=="strong");
+  assert(single.match({50,20.01},"Main St").reason=="selected_distance_exceeds_20m");
+  assert(single.match({50,35},"Main St").reason=="selected_distance_exceeds_20m");
+  assert(single.match({50,35.01},"Main St").reason=="no_candidate_within_35m");
+  assert(single.match({50,1},"Unknown name").reason.empty());
+  assert(unknown.match({50,0},"Main St").reason=="selected_level_unusable");
+  Index quarantined({{"q","p","MAIN ST","QQ",{{0,0},{200,0}}}});assert(quarantined.match({50,25},"Main St").reason=="selected_geometry_conflict");
+  assert(index.match({50,5},"").reason=="candidate_margin_below_6m");
+  assert(index.match({50,1},"").reason=="unconfirmed_name_margin_below_12m");
+  assert(stacked.match({-50,1},"Main St").reason=="competing_level_uncertainty");
+  assert(junction_index.locate({-10,2},"Main St","",junctions).first.reason=="nearby_junction_unresolved");
+  assert(junction_index.locate({1,1},"Main St","",junctions).first.reason=="candidate_margin_below_6m");
   std::cout<<"Passed C++23: street normalization, named parallel roads, ambiguous roads, grade separation, unmatched points, sampling invariance.\n";
 }
