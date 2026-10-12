@@ -49,3 +49,7 @@ next-env.d.ts
 *.tsbuildinfo
 __pycache__/
 *.pyc
+
+# Checkout-local working instructions and handoff notes
+AGENTS.md
+CODEX-HANDOFF-*.md
